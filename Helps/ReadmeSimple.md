@@ -17,6 +17,13 @@ cd PythonProyect
 # Levantar servicios
 make up-build
 
+docker compose build
+docker compose up
+docker compose down
+docker compose -f docker-compose.yml exec web python reset_db.py
+docker compose -f docker-compose.yml exec web python init_db.py
+
+
 # Ver logs (opcional)
 make logs
 ```
