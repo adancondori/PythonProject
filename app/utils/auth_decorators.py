@@ -6,6 +6,17 @@ def token_required(f):
     """Decorador para requerir token JWT válido"""
     @wraps(f)
     def decorated(*args, **kwargs):
+        # AUTENTICACIÓN TEMPORALMENTE DESACTIVADA
+        # Crear usuario dummy con permisos de administrador
+        dummy_user = User.query.filter_by(role='admin').first()
+        if not dummy_user:
+            # Si no hay admin, usar el primer usuario disponible
+            dummy_user = User.query.first()
+        g.current_user = dummy_user
+        return f(*args, **kwargs)
+
+        # CÓDIGO ORIGINAL COMENTADO
+        """
         token = None
 
         # Buscar token en headers
@@ -41,7 +52,7 @@ def token_required(f):
                 'message': 'Error al verificar token',
                 'error': str(e)
             }), 401
-
+        """
         return f(*args, **kwargs)
 
     return decorated
@@ -51,6 +62,12 @@ def role_required(required_role):
     def decorator(f):
         @wraps(f)
         def decorated(*args, **kwargs):
+            # AUTENTICACIÓN TEMPORALMENTE DESACTIVADA
+            # Permitir acceso sin verificar rol
+            return f(*args, **kwargs)
+
+            # CÓDIGO ORIGINAL COMENTADO
+            """
             if not hasattr(g, 'current_user') or g.current_user is None:
                 return jsonify({
                     'success': False,
@@ -63,7 +80,7 @@ def role_required(required_role):
                     'message': f'Acceso denegado. Se requiere rol: {required_role} o superior',
                     'user_role': g.current_user.role
                 }), 403
-
+            """
             return f(*args, **kwargs)
 
         return decorated
